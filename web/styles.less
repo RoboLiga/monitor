@@ -1,0 +1,66 @@
+* {
+  position: relative;
+}
+
+html {
+  height: 100vh;
+}
+
+body {
+  display: flex;
+
+  flex-direction: column;
+
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+div {
+  margin: 0;
+  padding: 0;
+
+  //outline: black 1px dashed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: sans-serif;
+  margin: 1em;
+}
+
+#header {
+  //padding: 1em;
+  width: 100%;
+
+  background: aliceblue;
+
+  order: 0;
+}
+
+#game {
+  display: flex;
+
+  order: 1;
+
+  flex-grow: 1;
+
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+
+#game_display {
+  order: 0;
+
+  flex-grow: 1;
+
+  //border: black 1px dashed;
+}
+
+#controls {
+  flex-basis: 30em;
+  height: 100%;
+  background: bisque;
+
+  order: 1;
+}
