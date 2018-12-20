@@ -52,11 +52,11 @@ class Game {
 //    }
 
     for (Apple a in field.apples) {
-      a._draw(context);
+      a._draw(context, -field.top_left.x, -field.top_left.y);
     }
 
     for (Bot b in bots) {
-      b._draw(context);
+      b._draw(context, -field.top_left.x, -field.top_left.y);
     }
   }
 }
@@ -64,13 +64,22 @@ class Game {
 /// Opisuje 'nežive' dele igralnega polja.
 ///
 /// Vsebuje širino in višino polja (tla), ter ciljna področja, predmete, itd.
+///
+/// Koordinate imajo izhodišče v zgornjem levem kotu. Koordinata x narašča na
+/// desno; koordinata y narašča navzdol.
 @JsonSerializable()
 class Field {
+  /// Koordinate zgornjega levega kota igrišča
+  Position top_left;
+
+  /// Koordinate spodnjega desnega kota igrišča
+  Position bottom_right;
+
   /// Širina igralne površine
-  double width;
+  double get width => bottom_right.x - top_left.x;
 
   /// Višina igralne površine
-  double height;
+  double get height => bottom_right.y - top_left.y;
 
   /// Seznam jabolk na igralni površini
   List<Apple> apples;
@@ -79,8 +88,13 @@ class Field {
   ///
   /// Konstruira igralno polje širine [width] and višine [height] na katerem so
   /// jabolka podana v seznamu [apples].
-  Field(this.width, this.height, this.apples)
-      : assert(width >= 0 && height >= 0);
+  Field(this.top_left, this.bottom_right, this.apples)
+      : assert(width >= 0 &&
+      height >= 0 &&
+      top_left.x >= 0 &&
+      top_left.y >= 0 &&
+      bottom_right.x >= 0 &&
+      bottom_right.y >= 0);
 
   /// JSON konstruktor
   factory Field.fromJson(Map<String, dynamic> json) => _$FieldFromJson(json);
@@ -129,12 +143,12 @@ class Apple {
   /// Postopek za risanje
   ///
   /// Za risanje potrebuje 2D [context] HTML gradnika *canvas*.
-  void _draw(CanvasRenderingContext2D context) {
+  void _draw(CanvasRenderingContext2D context, double offsetX, double offsetY) {
     context
       ..strokeStyle = color == AppleColor.red ? 'red' : 'brown'
       ..fillStyle = color == AppleColor.red ? 'red' : 'brown'
-      ..fillRect(
-          x - _appleSize / 2, y - _appleSize / 2, _appleSize, _appleSize);
+      ..fillRect(x - _appleSize / 2 + offsetX, y - _appleSize / 2 + offsetY,
+          _appleSize, _appleSize);
   }
 }
 
@@ -183,12 +197,12 @@ class Bot {
   /// Postopek za risanje
   ///
   /// Za risanje potrebuje 2D [context] HTML gradnika *canvas*.
-  void _draw(CanvasRenderingContext2D context) {
+  void _draw(CanvasRenderingContext2D context, double offsetX, double offsetY) {
     context
       ..strokeStyle = 'black'
 
       // Translate to bot location and rotate to simplify the drawing procedure
-      ..translate(x, y)
+      ..translate(x + offsetX, y + offsetY)
       // Canvas rotates clockwise for some reason
       ..rotate(-orientation * pi / 180)
 
@@ -218,6 +232,29 @@ class Bot {
 
       // Inverse transform
       ..rotate(orientation * pi / 180)
-      ..translate(-x, -y);
+      ..translate(-x - offsetX, -y - offsetY);
   }
+}
+
+/// Razred, ki opisuje koordinate
+///
+/// Koordinate imajo izhodišče v zgornjem levem kotu. Koordinata x narašča na
+/// desno; koordinata y narašča navzdol.
+@JsonSerializable()
+class Position {
+  /// Koordinati
+  double x, y;
+
+  /// Privzeti konstruktor
+  ///
+  /// Koordinate imajo izhodišče v zgornjem levem kotu. Koordinata [x] narašča
+  /// na desno; koordinata [y] narašča navzdol.
+  Position(this.x, this.y) : assert(x >= 0 && y >= 0);
+
+  /// JSON konstruktor
+  factory Position.fromJson(Map<String, dynamic> json) =>
+      _$PositionFromJson(json);
+
+  /// JSON vzaporedjevalnik
+  Map<String, dynamic> toJson() => _$PositionToJson(this);
 }

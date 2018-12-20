@@ -9,13 +9,11 @@
       "description": "Describes the playing field",
       "type": "object",
       "properties": {
-        "width": {
-          "type": "number",
-          "minimum": 0
+        "top_left": {
+          "$ref": "#/definitions/position"
         },
-        "height": {
-          "type": "number",
-          "minimum": 0
+        "bottom_right": {
+          "$ref": "#/definitions/position"
         },
         "apples": {
           "type": "array",
@@ -25,8 +23,8 @@
         }
       },
       "required": [
-        "width",
-        "height",
+        "top_left",
+        "bottom_right",
         "apples"
       ]
     },
