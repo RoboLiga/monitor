@@ -5,6 +5,18 @@
   "description": "Describes the game state.",
   "type": "object",
   "properties": {
+    "game_on": {
+      "type": "boolean"
+    },
+    "score": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "time_left": {
+      "type": "number"
+    },
     "field": {
       "description": "Describes the playing field",
       "type": "object",
@@ -112,6 +124,9 @@
     }
   },
   "required": [
+    "score",
+    "game_on",
+    "time_left",
     "field",
     "bots"
   ]

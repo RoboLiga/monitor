@@ -9,6 +9,15 @@ part 'game.g.dart';
 /// predstavlja začetno točko za risanje.
 @JsonSerializable()
 class Game {
+  /// Trenutni rezultat
+  List<int> score;
+
+  /// Ali je igra v teku
+  bool game_on;
+
+  /// Preostali čas tekme v sekundah
+  double time_left;
+
   /// Opis igralnega polja
   Field field;
 
@@ -38,7 +47,7 @@ class Game {
   void draw(CanvasRenderingContext2D context, num scale) {
     context
       ..scale(scale, scale)
-      // Outline
+    // Outline
       ..strokeStyle = 'green'
       ..lineWidth = 0.1
       ..strokeRect(0, 0, field.width, field.height);

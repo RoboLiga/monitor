@@ -1,4 +1,10 @@
 {
+  "time_left": 100.0,
+  "game_on": true,
+  "score": [
+    1,
+    2
+  ],
   "field": {
     "top_left": {
       "x": 10,
