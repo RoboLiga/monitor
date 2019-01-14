@@ -27,6 +27,29 @@
         "bottom_right": {
           "$ref": "#/definitions/position"
         },
+        "baskets": {
+          "type": "array",
+          "items": {
+            "description": "Basket; target area",
+            "type": "object",
+            "properties": {
+              "team": {
+                "type": "integer"
+              },
+              "top_left": {
+                "$ref": "#/definitions/position"
+              },
+              "bottom_right": {
+                "$ref": "#/definitions/position"
+              }
+            },
+            "required": [
+              "top_left",
+              "bottom_right",
+              "team"
+            ]
+          }
+        },
         "apples": {
           "type": "array",
           "items": {
@@ -37,6 +60,7 @@
       "required": [
         "top_left",
         "bottom_right",
+        "baskets",
         "apples"
       ]
     },

@@ -45,24 +45,9 @@ class Game {
   /// gradnikom *canvas* in igralnega polja: `min(c_width/f_width,
   /// c_height/f_height)`.
   void draw(CanvasRenderingContext2D context, num scale) {
-    context
-      ..scale(scale, scale)
-    // Outline
-      ..strokeStyle = 'green'
-      ..lineWidth = 0.1
-      ..strokeRect(0, 0, field.width, field.height);
+    context.scale(scale, scale);
 
-//    for(var i = 0; i < 150; i+=5){
-//      context.strokeRect(i, 0, 0.01, 50);
-//    }
-//
-//    for(var j = 0; j < 50; j+=5){
-//      context.strokeRect(0, j, 150, 0.01);
-//    }
-
-    for (Apple a in field.apples) {
-      a._draw(context, -field.top_left.x, -field.top_left.y);
-    }
+    field._draw(context);
 
     for (Bot b in bots) {
       b._draw(context, -field.top_left.x, -field.top_left.y);
@@ -78,6 +63,22 @@ class Game {
 /// desno; koordinata y narašča navzdol.
 @JsonSerializable()
 class Field {
+  /// Privzeti konstruktor
+  ///
+  /// Konstruira igralno polje z levim zgornjim kotom [top_left] in desnim
+  /// spodnjim kotom [bottom_right] na katerem so jabolka podana v seznamu
+  /// [apples].
+  Field(this.top_left, this.bottom_right, this.apples, this.baskets)
+      : assert(width >= 0 &&
+      height >= 0 &&
+      top_left.x >= 0 &&
+      top_left.y >= 0 &&
+      bottom_right.x >= 0 &&
+      bottom_right.y >= 0);
+
+  /// JSON konstruktor
+  factory Field.fromJson(Map<String, dynamic> json) => _$FieldFromJson(json);
+
   /// Koordinate zgornjega levega kota igrišča
   Position top_left;
 
@@ -93,11 +94,41 @@ class Field {
   /// Seznam jabolk na igralni površini
   List<Apple> apples;
 
+  /// Seznam košar
+  List<Basket> baskets;
+
+  /// JSON vzaporedjevalnik
+  Map<String, dynamic> toJson() => _$FieldToJson(this);
+
+  void _draw(CanvasRenderingContext2D context) {
+    context
+      ..strokeStyle = 'green'
+      ..lineWidth = 0.1
+      ..strokeRect(0, 0, width, height);
+
+    for (Basket b in baskets) {
+      b._draw(context, -top_left.x, -top_left.y);
+    }
+
+    for (Apple a in apples) {
+      a._draw(context, -top_left.x, -top_left.y);
+    }
+  }
+}
+
+/// Opisuje košaro; ciljno območje za jabolka.
+///
+/// Vsebuje širino in višino košare ter identifikator njene ekipe.
+///
+/// Koordinate imajo izhodišče v zgornjem levem kotu. Koordinata x narašča na
+/// desno; koordinata y narašča navzdol.
+@JsonSerializable()
+class Basket {
   /// Privzeti konstruktor
   ///
-  /// Konstruira igralno polje širine [width] and višine [height] na katerem so
-  /// jabolka podana v seznamu [apples].
-  Field(this.top_left, this.bottom_right, this.apples)
+  /// Konstruira košaro z levim zgornjim kotom [top_left] in desnim spodnjim
+  /// kotom [bottom_right] ter identifikatorjem ekipe [team].
+  Basket(this.top_left, this.bottom_right, this.team)
       : assert(width >= 0 &&
       height >= 0 &&
       top_left.x >= 0 &&
@@ -106,10 +137,32 @@ class Field {
       bottom_right.y >= 0);
 
   /// JSON konstruktor
-  factory Field.fromJson(Map<String, dynamic> json) => _$FieldFromJson(json);
+  factory Basket.fromJson(Map<String, dynamic> json) => _$BasketFromJson(json);
 
-  /// JSON vzaporedjevalnik
-  Map<String, dynamic> toJson() => _$FieldToJson(this);
+  /// Identifikator ekipe
+  int team;
+
+  /// Koordinate zgornjega levega kota košare
+  Position top_left;
+
+  /// Koordinate spodnjega desnega kota košare
+  Position bottom_right;
+
+  /// Širina košare
+  double get width => bottom_right.x - top_left.x;
+
+  /// Višina košare
+  double get height => bottom_right.y - top_left.y;
+
+  static const List<String> _idColors = <String>['blue', 'red'];
+
+  void _draw(CanvasRenderingContext2D context, double offsetX, double offsetY) {
+    context
+      ..strokeStyle = _idColors[team]
+      ..lineWidth = 0.1
+      ..strokeRect(top_left.x + offsetX, top_left.y + offsetY,
+          bottom_right.x + offsetX, bottom_right.y + offsetY);
+  }
 }
 
 /// Naštevni tip za barve jabolk
