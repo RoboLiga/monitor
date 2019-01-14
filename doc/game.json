@@ -8,12 +8,6 @@
     "game_on": {
       "type": "boolean"
     },
-    "score": {
-      "type": "array",
-      "items": {
-        "type": "integer"
-      }
-    },
     "time_left": {
       "type": "number"
     },
@@ -148,7 +142,6 @@
     }
   },
   "required": [
-    "score",
     "game_on",
     "time_left",
     "field",
