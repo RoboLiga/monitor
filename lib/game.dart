@@ -10,7 +10,7 @@ part 'game.g.dart';
 @JsonSerializable()
 class Game {
   /// Trenutni rezultat
-  List<int> score = <int>[0, 0];
+  List<int> score;
 
   /// Ali je igra v teku
   bool game_on;
@@ -28,7 +28,7 @@ class Game {
   ///
   /// Za konstrukcijo potrebuje objekt, ki opisuje igralno polje [field] in
   /// seznam botov [bots].
-  Game(this.field, this.bots, this.game_on, this.time_left);
+  Game(this.field, this.bots);
 
   /// JSON konstruktor
   factory Game.fromJson(Map<String, dynamic> json) => _$GameFromJson(json);
