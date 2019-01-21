@@ -1,0 +1,134 @@
+{
+  "timeLeft": 100.0,
+  "gameOn": true,
+  "team1": {
+    "id": 13,
+    "name": "Drugi team",
+    "score": 2
+  },
+  "team2": {
+    "id": 5,
+    "name": "ekipa2",
+    "score": 3
+  },
+  "field": {
+    "topLeft": [
+      10,
+      2
+    ],
+    "topRight": [
+      150,
+      2
+    ],
+    "bottomLeft": [
+      10,
+      50
+    ],
+    "bottomRight": [
+      150,
+      50
+    ],
+    "baskets": {
+      "team1": {
+        "topLeft": [
+          10,
+          10
+        ],
+        "topRight": [
+          20,
+          10
+        ],
+        "bottomLeft": [
+          10,
+          40
+        ],
+        "bottomRight": [
+          20,
+          40
+        ]
+      },
+      "team2": {
+        "topLeft": [
+          110,
+          10
+        ],
+        "topRight": [
+          120,
+          10
+        ],
+        "bottomLeft": [
+          110,
+          40
+        ],
+        "bottomRight": [
+          120,
+          40
+        ]
+      }
+    }
+  },
+  "apples": [
+    {
+      "type": "appleGood",
+      "position": [
+        10,
+        5
+      ]
+    },
+    {
+      "type": "appleBad",
+      "position": [
+        15,
+        5
+      ]
+    },
+    {
+      "type": "appleGood",
+      "position": [
+        16,
+        15
+      ]
+    },
+    {
+      "type": "appleGood",
+      "position": [
+        3,
+        25
+      ]
+    }
+  ],
+  "robots": [
+    {
+      "id": 13,
+      "position": [
+        15,
+        8
+      ],
+      "orientation": 10
+    },
+    {
+      "id": 5,
+      "position": [
+        1,
+        5
+      ],
+      "orientation": 250
+    },
+    {
+      "id": 7,
+      "position": [
+        15,
+        50
+      ],
+      "orientation": 100
+    },
+    {
+      "id": 2,
+      "position": [
+        50,
+        25
+      ],
+      "orientation": 0
+    }
+  ]
+}
