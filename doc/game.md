@@ -1,7 +1,7 @@
 Opis Game JSON datoteke
 =====================
 
-V tem dokumentu so opisani objekti v JSON datoteki, ki opisuje trenutno stanje igre. Primer celotne datoteke je v `web/game_example.json`.
+V tem dokumentu so opisani objekti v datoteki JSON, ki opisuje trenutno stanje igre. Primer celotne datoteke je v `web/game_example.json`.
 
 Igra
 ----
@@ -17,7 +17,7 @@ Igra
 }
 ```
 
-Igra je glavni objekt v JSON datoteki. Vsebuje preostali čas tekme `timeLeft`, zastavico, ki opisuje ali je tekma v teku, `gameOn`, opisa ekip `team1` in `team2`, opis igrišča `field`, seznam jabolk na igrišču `apples` in seznam robotov na igrišču `robots`.
+Igra je glavni objekt v datoteki JSON. Vsebuje preostali čas tekme `timeLeft` v sekundah, zastavico, ki opisuje ali je tekma v teku, `gameOn`, opisa ekip `team1` in `team2`, opis igrišča `field`, seznam jabolk na igrišču `apples` in seznam robotov na igrišču `robots`.
 
 Ekipa
 -----
@@ -46,7 +46,7 @@ Igrišče
 }
 ```
 
-Igrišče je objekt sestavljen iz opisov pozicij njegovih kotov: `topLeft`, `topRight`, `bottomLeft` in `bottomRight`, ter objekta `baskets`, ki vsebuje opisa košar obeh ekip `team1` in `team2`.
+Igrišče je objekt sestavljen iz koordinat vogalov: `topLeft`, `topRight`, `bottomLeft` in `bottomRight`, ter objekta `baskets`, ki vsebuje opisa košar obeh ekip `team1` in `team2`.
 
 Košara
 ------
@@ -59,7 +59,7 @@ Košara
 }
 ```
 
-Košara je objekt, ki vsebuje štiri točke, ki opisujejo pozicije (v milimetrih) njenih kotov.
+Košara je objekt, ki vsebuje štiri točke, ki predstavljajo koordinate njenih vogalov (v milimetrih).
 
 Robot
 -----
@@ -71,7 +71,7 @@ Robot
 }
 ```
 
-Robot je objekt sestavljen iz ArUco identifikatorja `id`, pozicije na igralnem polju `position` (v milimetrih) in azimutne orientacije `orientation` (v stopinjah).
+Robot je objekt sestavljen iz identifikatorja ArUco `id`, pozicije na igralnem polju `position` (v milimetrih) in azimutne orientacije `orientation` (v stopinjah).
 
 Jabolko
 -------
