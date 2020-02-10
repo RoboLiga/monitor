@@ -4,6 +4,7 @@
 
 html {
   height: 100vh;
+  background-color: #FFF;
 }
 
 body {
@@ -28,11 +29,12 @@ h1, h2, h3, h4, h5, h6 {
   margin: 1em;
 }
 
+
 #header {
   //padding: 1em;
   width: 100%;
 
-  background: aliceblue;
+  background: #eaffe6;
 
   order: 0;
 }
@@ -44,13 +46,13 @@ h1, h2, h3, h4, h5, h6 {
 
   flex-grow: 1;
 
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: nowrap;
-  justify-content: flex-end;
+  //justify-content: flex-end;
 }
 
 #game_display {
-  order: 0;
+  order: 1;
 
   flex-grow: 1;
 
@@ -58,9 +60,83 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #controls {
-  flex-basis: 30em;
-  height: 100%;
-  background: bisque;
+  //flex-basis: 24em;
+  flex-grow: 0;
+  flex-shrink: 1;
 
-  order: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  //height: 100%;
+  background: #c7c7c7;
+  border-radius: 4px;
+  margin-left: 0.6em;
+  margin-right: 0.6em;
+  margin-top: 0.6em;
+
+  display: flex;
+
+  order: 0;
+
+  #time_display {
+    //flex-basis: 100%;
+    //margin-left: 0;
+    flex-grow: 1;
+    display: flex;
+    justify-content: start;
+  }
+
+  #vline {
+    width: 3px;
+    height: 100%;
+    background-color: #FFF;
+  }
+
+  #scores {
+    //width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 2;
+    justify-content: center;
+
+    #scoreDivider {
+      font-size-adjust: 1;
+      margin-right: 0;
+      margin-left: 0;
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      //justify-content: space-between;
+
+      p {
+        font-family: sans-serif;
+        //margin: auto;
+        font-size: small;
+        flex-grow: 0;
+        margin-right: 0.1em;
+      }
+
+      .teamName {
+        flex-grow: 1;
+      }
+
+      .teamScore {
+        flex-grow: 0;
+        font-size-adjust: 1;
+      }
+
+      padding: 2px;
+    }
+
+    #team1 .teamScore {
+      color: blue;
+    }
+
+    #team2 .teamScore {
+      color: red;
+    }
+  }
 }

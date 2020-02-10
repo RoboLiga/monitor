@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="scaffolded-by" content="https://github.com/google/stagehand">
-    <title>Sodnik</title>
+    <title>Monitor</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="favicon.ico">
     <script defer src="main.dart.js"></script>
@@ -14,16 +14,34 @@
 
 <body>
 
-<div id="header"><h1>Robo liga – Sodnik</h1></div>
+<!--<div id="header"><h3>Robo liga FRI – Monitor</h3></div>-->
 
 <div id="game">
+    <div id="controls">
+        <div id="time_display">
+        <h2>Preostali čas:</h2>
+        <h2 id="time"></h2>
+        </div>
+        <div id="vline"></div>
+        <div id="scores">
+            <div id="team1" class="team">
+                <p class="teamId"></p>
+                <h2 class="teamName">Team 1</h2>
+                <h2 class="teamScore"></h2>
+            </div>
+            <h2 id="scoreDivider">:</h2>
+            <div id="team2" class="team">
+                <h2 class="teamScore"></h2>
+                <h2 class="teamName">Team 1</h2>
+                <p class="teamId"></p>
+            </div>
+        </div>
+    </div>
+
     <canvas id="game_display">
     </canvas>
 
-    <div id="controls">
-        <h3>Team 1</h3>
-        <h3>Team 2</h3>
-    </div>
+
 </div>
 </body>
 </html>
