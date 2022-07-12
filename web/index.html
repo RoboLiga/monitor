@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="scaffolded-by" content="https://github.com/google/stagehand">
     <title>Monitor</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/styles.css">
     <link rel="icon" href="favicon.ico">
-    <script defer src="main.dart.js"></script>
+    <script defer src="/main.dart.js"></script>
 </head>
 
 <body>
@@ -18,11 +18,54 @@
 
 <div id="game">
     <div id="controls">
-        <div id="time_display">
-        <h2>Preostali čas:</h2>
-        <h2 id="time"></h2>
+        <div>
+            <button id="new_game_button">Nova igra</button>
         </div>
-        <div id="vline"></div>
+        <div class="vline"></div>
+        <div id="time_setup">
+            <label for="time_input">Čas igre</label><input id="time_input" type="text" pattern="[0-9]{2}:[0-9]{2}"
+                                                           value="3:00"/>
+            <button id="time_submit">Nastavi</button>
+        </div>
+        <div class="vline"></div>
+        <div id="score_adjust">
+            <input id="team1_score_adjust" type="number" value="0"/>:
+            <input id="team2_score_adjust" type="number" value="0"/>
+            <button id="score_submit">Nastavi</button>
+        </div>
+        <div class="vline"></div>
+        <div>
+            <select id="team1_select">
+                <option value="1">team1</option>
+                <option value="2">team2</option>
+            </select>
+            <select id="team2_select">
+                <option value="1">team1</option>
+                <option value="2">team2</option>
+            </select>
+            <button id="teams_submit">Nastavi</button>
+        </div>
+        <div class="vline"></div>
+        <div>
+            <button id="start_button">Start</button>
+            <button id="stop_button" disabled="disabled">Stop</button>
+        </div>
+        <div class="vline"></div>
+        <div>
+            <button id="set_game_id_button">Spremljaj</button>
+            <input id="set_game_id_input" maxlength="4" minlength="4" type="text" pattern="[0-9a-f]{4}"/>
+        </div>
+        <div class="vline"></div>
+        <div>
+            <button id="hide_controls_button">Skrij</button>
+        </div>
+    </div>
+    <div id="hud">
+        <div id="time_display">
+            <h2>Preostali čas:</h2>
+            <h2 id="time"></h2>
+        </div>
+        <div class="vline"></div>
         <div id="scores">
             <div id="team1" class="team">
                 <p class="teamId"></p>
@@ -35,6 +78,10 @@
                 <h2 class="teamName">Team 1</h2>
                 <p class="teamId"></p>
             </div>
+        </div>
+        <div class="vline"></div>
+        <div id="gameid">
+
         </div>
     </div>
 

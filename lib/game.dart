@@ -9,10 +9,14 @@ part 'game.g.dart';
 /// predstavlja začetno točko za risanje.
 @JsonSerializable()
 class Game {
-  /// Trenutni rezultat
-  List<int> score;
+  String id = "a";
+
+  Fields fields;
+  Objects objects;
+  Map<String, Team> teams;
 
   /// Ali je igra v teku
+  @JsonKey(name: "gameOn")
   bool game_on;
 
   /// Preostali čas tekme v sekundah
@@ -22,23 +26,15 @@ class Game {
       seconds: timeLeft.toInt(),
       milliseconds: ((timeLeft % 1.0) * 1000).toInt());
 
-  Team team1;
-  Team team2;
 
-  /// Opis igralnega polja
-  Field field;
+  Game(this.id, this.fields, this.objects, this.teams, this.game_on,
+      this.timeLeft);
 
-  List<Apple> apples;
+  Team get team1 => teams["team1"];
+  Team get team2 => teams["team2"];
 
-  /// Seznam botov v igri
-  List<Bot> robots;
-
-  /// Privzeti konstruktor
-  ///
-  /// Za konstrukcijo potrebuje objekt, ki opisuje igralno polje [field] in
-  /// seznam botov [robots].
-  Game(this.field, this.robots, this.apples, this.timeLeft, this.team1,
-      this.team2);
+  List<Bot> get robots => objects.robots.values.toList();
+  List<Apple> get apples => objects.hives.values.toList();
 
   /// JSON konstruktor
   factory Game.fromJson(Map<String, dynamic> json) => _$GameFromJson(json);
@@ -55,31 +51,136 @@ class Game {
   /// gradnikom *canvas* in igralnega polja: `min(c_width/f_width,
   /// c_height/f_height)`.
   void draw(CanvasRenderingContext2D context, num scale, int canvasWidth, int canvasHeight, ImageElement logo) {
-//    print(context.canvas.width);
-//    print(field.width * scale);
-//    print((context.canvas.width - field.width * scale * 0.9) * 0.5 * 0.9);
-
     context
       ..scale(scale * 0.9, scale * 0.9)
-//      ..scale(scale, scale)
-//      ..translate(field.width * 0.1 * 0.5, field.height * 0.1 * 0.5)
-      ..translate((context.canvas.width - field.width * scale * 0.9)/scale * 0.5/0.9,
-          (context.canvas.height - field.height * scale * 0.9)/scale * 0.5/0.9)
+      ..translate((context.canvas.width - fields.field.width * scale * 0.9)/scale * 0.5/0.9,
+          (context.canvas.height - fields.field.height * scale * 0.9)/scale * 0.5/0.9)
       ..transform(1, 0, 0, -1, 0, 0)
+      ..translate(0, -fields.field.height);
 
-      ..translate(0, -field.height);
-//      ..translate(-field.leftEdge, -field.bottomEdge);
-
-    field._draw(context, logo);
+    fields._draw(context, logo);
 
     for (Apple a in apples) {
-      a._draw(context, -field.topLeft[0], -field.topLeft[1]);
+      a._draw(context, -fields.field.topLeft.x, -fields.field.topLeft.y);
     }
 
     for (Bot b in robots) {
       b._draw(
-          context, -field.topLeft[0], -field.topLeft[1], team1.id, team2.id);
+          context, -fields.field.topLeft.x, -fields.field.topLeft.y, team1.id, team2.id);
     }
+  }
+}
+
+@JsonSerializable()
+class Objects {
+  Map<String, Apple> hives;
+//  List<dynamic> hives;
+  Map<String, Bot> robots;
+//  List<dynamic> robots;
+
+  Objects(this.hives, this.robots);
+
+
+  /// JSON konstruktor
+  factory Objects.fromJson(Map<String, dynamic> json) => _$ObjectsFromJson(json);
+
+  /// JSON vzaporedjevalnik
+  Map<String, dynamic> toJson() => _$ObjectsToJson(this);
+}
+
+@JsonSerializable()
+class Fields {
+  Field field;
+  Map<String, Basket> baskets;
+  Zones zones;
+
+  Fields(this.field, this.baskets, this.zones);
+
+  /// JSON konstruktor
+  factory Fields.fromJson(Map<String, dynamic> json) => _$FieldsFromJson(json);
+
+  /// JSON vzaporedjevalnik
+  Map<String, dynamic> toJson() => _$FieldsToJson(this);
+
+  void _draw(CanvasRenderingContext2D context, ImageElement logo) {
+    field._draw(context, logo);
+
+    baskets['team1']._draw(context, -field.topLeft.x, -field.topLeft.y, 0);
+    baskets['team2']._draw(context, -field.topLeft.x, -field.topLeft.y, 1);
+
+    zones._draw(context, -field.topLeft.x, -field.topLeft.y);
+  }
+}
+
+@JsonSerializable()
+class Zones {
+  Zones(this.team1, this.team2, this.neutral);
+
+  Zone team1;
+  Zone team2;
+  Zone neutral;
+
+  factory Zones.fromJson(Map<String, dynamic> json) => _$ZonesFromJson(json);
+
+  /// JSON vzaporedjevalnik
+  Map<String, dynamic> toJson() => _$ZonesToJson(this);
+
+  void _draw(CanvasRenderingContext2D context, double offsetX, double offsetY) {
+    team1._draw(context, offsetX, offsetY, 0);
+    team2._draw(context, offsetX, offsetY, 1);
+    neutral._draw(context, offsetX, offsetY, 2);
+  }
+}
+
+@JsonSerializable()
+class Zone {
+
+
+  Position topLeft;
+  Position topRight;
+
+  Position bottomLeft;
+
+  /// Koordinate spodnjega desnega kota igrišča
+  Position bottomRight;
+
+  double get leftEdge => min(topLeft.x, bottomLeft.x);
+
+  double get rightEdge => max(topRight.x, bottomRight.x);
+
+  double get topEdge => max(topLeft.y, topRight.y);
+
+  double get bottomEdge => min(bottomLeft.y, bottomRight.y);
+
+
+  /// Širina igralne površine
+  double get width => rightEdge - leftEdge;
+
+  /// Višina igralne površine
+  double get height => topEdge - bottomEdge;
+
+  Zone(this.topLeft, this.topRight, this.bottomLeft, this.bottomRight);
+
+  factory Zone.fromJson(Map<String, dynamic> json) => _$ZoneFromJson(json);
+
+  /// JSON vzaporedjevalnik
+  Map<String, dynamic> toJson() => _$ZoneToJson(this);
+
+//  static const List<String> _idColors = <String>['blue', 'red',];
+  static const List<String> _idColorsFill = <String>['#CCF9', '#FAA9', '#AFA9'];
+
+  void _draw(CanvasRenderingContext2D context, double offsetX, double offsetY, team) {
+    context
+//      ..strokeStyle = _idColors[team]
+      ..fillStyle = _idColorsFill[team]
+      ..beginPath()
+      ..moveTo(topRight.x, topRight.y)
+      ..lineTo(bottomRight.x, bottomRight.y)
+      ..lineTo(bottomLeft.x, bottomLeft.y)
+      ..lineTo(topLeft.x, topLeft.y)
+      ..lineTo(topRight.x, topRight.y)
+      ..closePath()
+      ..fill();
   }
 }
 
@@ -113,40 +214,39 @@ class Field {
   /// Konstruira igralno polje z levim zgornjim kotom [topLeft] in desnim
   /// spodnjim kotom [bottomRight] na katerem so jabolka podana v seznamu
   /// [apples].
-  Field(this.topLeft, this.topRight, this.bottomLeft, this.bottomRight,
-      this.baskets);
+  Field(this.topLeft, this.topRight, this.bottomLeft, this.bottomRight);
 
   /// JSON konstruktor
   factory Field.fromJson(Map<String, dynamic> json) => _$FieldFromJson(json);
 
   /// Koordinate zgornjega levega kota igrišča
-  List<int> topLeft;
-  List<int> topRight;
+  Position topLeft;
+  Position topRight;
 
-  List<int> bottomLeft;
+  Position bottomLeft;
 
   /// Koordinate spodnjega desnega kota igrišča
-  List<int> bottomRight;
+  Position bottomRight;
 
-  int get leftEdge => min(topLeft[0], bottomLeft[0]);
+  double get leftEdge => min(topLeft.x, bottomLeft.x);
 
-  int get rightEdge => max(topRight[0], bottomRight[0]);
+  double get rightEdge => max(topRight.x, bottomRight.x);
 
-  int get topEdge => max(topLeft[1], topRight[1]);
+  double get topEdge => max(topLeft.y, topRight.y);
 
-  int get bottomEdge => min(bottomLeft[1], bottomRight[1]);
+  double get bottomEdge => min(bottomLeft.y, bottomRight.y);
 
   /// Širina igralne površine
-  int get width => rightEdge - leftEdge;
+  double get width => rightEdge - leftEdge;
 
   /// Višina igralne površine
-  int get height => topEdge - bottomEdge;
+  double get height => topEdge - bottomEdge;
 
   /// Seznam jabolk na igralni površini
 //  List<Apple> apples;
 
   /// Seznam košar
-  Map<String, Basket> baskets;
+//  Map<String, Basket> baskets;
 
   /// JSON vzaporedjevalnik
   Map<String, dynamic> toJson() => _$FieldToJson(this);
@@ -157,21 +257,22 @@ class Field {
       ..fillStyle = '#E1FFD9'
       ..lineWidth = 10
       ..beginPath()
-      ..moveTo(topLeft[0], topLeft[1])
-      ..lineTo(topRight[0], topRight[1])
-      ..lineTo(bottomRight[0], bottomRight[1])
-      ..lineTo(bottomLeft[0], bottomLeft[1])
-      ..lineTo(topLeft[0], topLeft[1])
+      ..moveTo(topLeft.x, topLeft.y)
+      ..lineTo(topRight.x, topRight.y)
+      ..lineTo(bottomRight.x, bottomRight.y)
+      ..lineTo(bottomLeft.x, bottomLeft.y)
+      ..lineTo(topLeft.x, topLeft.y)
+      ..closePath()
       ..stroke()
       ..fill();
 
     context
-      ..drawImage(logo, width/2-logo.width/2, height/2-logo.height/2);
+      ..drawImage(logo, width/2-logo.width/2, height/2-logo.height/2) ;
 
 //      ..strokeRect(0, 0, width, height);
 
-    baskets['team1']._draw(context, -topLeft[0], -topLeft[1], 0);
-    baskets['team2']._draw(context, -topLeft[0], -topLeft[1], 1);
+//    baskets['team1']._draw(context, -topLeft[0], -topLeft[1], 0);
+//    baskets['team2']._draw(context, -topLeft[0], -topLeft[1], 1);
   }
 }
 
@@ -193,29 +294,30 @@ class Basket {
   factory Basket.fromJson(Map<String, dynamic> json) => _$BasketFromJson(json);
 
   /// Koordinate zgornjega levega kota košare
-  List<int> topLeft;
-  List<int> topRight;
+  Position topLeft;
+  Position topRight;
 
-  List<int> bottomLeft;
+  Position bottomLeft;
 
   /// Koordinate spodnjega desnega kota košare
-  List<int> bottomRight;
+  Position bottomRight;
 
   static const List<String> _idColors = <String>['blue', 'red'];
   static const List<String> _idColorsFill = <String>['#CCF', '#FAA'];
 
-  void _draw(CanvasRenderingContext2D context, int offsetX, int offsetY, team) {
+  void _draw(CanvasRenderingContext2D context, double offsetX, double offsetY, team) {
     context
       ..strokeStyle = _idColors[team]
       ..lineWidth = 10
       ..fillStyle = _idColorsFill[team]
 //      ..translate(offsetX, offsetY)
       ..beginPath()
-      ..moveTo(topRight[0], topRight[1])
-      ..lineTo(bottomRight[0], bottomRight[1])
-      ..lineTo(bottomLeft[0], bottomLeft[1])
-      ..lineTo(topLeft[0], topLeft[1])
-      ..lineTo(topRight[0], topRight[1])
+      ..moveTo(topRight.x, topRight.y)
+      ..lineTo(bottomRight.x, bottomRight.y)
+      ..lineTo(bottomLeft.x, bottomLeft.y)
+      ..lineTo(topLeft.x, topLeft.y)
+      ..lineTo(topRight.x, topRight.y)
+      ..closePath()
       ..stroke()
       ..fill();
 //      ..translate(-offsetX, -offsetY);
@@ -225,10 +327,10 @@ class Basket {
 /// Naštevni tip za barve jabolk
 enum AppleColor {
   /// Rdeča barva – zdravo
-  appleGood,
+  HIVE_HEALTHY,
 
   /// Rjava barva – gnilo
-  appleBad
+  HIVE_DISEASED
 }
 
 /// Razred, ki predstavlja jabolka.
@@ -239,22 +341,26 @@ class Apple {
   /// Barva jabolka
   AppleColor type;
 
-  /// Horizontalna lega jabolka
-  int get x => position[0];
+  double get x => position.x;
 
   /// Vertikalna lega jabolka (NB pozitivne vrednosti predstavljajo odmik od
   /// vrha)
-  int get y => position[1];
+//  int get y => position[1];
+//  double y;
+  double get y => position.y;
+//  List<int> position;
+  Position position;
 
-  List<int> position;
-
-  double direction;
+//  List<int> position;
+  double dir;
+//  double get direction => dir/3.14*180;
+  double get direction => dir;
 
   /// Privzeti konstruktor
   ///
   /// Jabolko ima barvo [color] in lokacijo [x], [y]. Koordinata [y] narašča od
   /// zgoraj navzdol, torej predstavlja odmik od zgorjnega roba igrišča.
-  Apple(this.id, this.type, this.position, this.direction);
+  Apple(this.id, this.type, this.position, this.dir);
 
   /// JSON konstruktor
   factory Apple.fromJson(Map<String, dynamic> json) => _$AppleFromJson(json);
@@ -268,13 +374,13 @@ class Apple {
   /// Postopek za risanje
   ///
   /// Za risanje potrebuje 2D [context] HTML gradnika *canvas*.
-  void _draw(CanvasRenderingContext2D context, int offsetX, int offsetY) {
+  void _draw(CanvasRenderingContext2D context, double offsetX, double offsetY) {
 //    print(direction);
     context
       ..translate(x, y)
       ..rotate(direction * pi / 180)
-      ..strokeStyle = type == AppleColor.appleGood ? 'green' : 'brown'
-      ..fillStyle = type == AppleColor.appleGood ? 'green' : 'brown'
+      ..strokeStyle = type == AppleColor.HIVE_HEALTHY ? 'green' : 'brown'
+      ..fillStyle = type == AppleColor.HIVE_HEALTHY ? 'green' : 'brown'
       ..fillRect(-_appleSize / 2, -_appleSize / 2, _appleSize, _appleSize)
       ..rotate(-direction * pi / 180)
       ..translate(-x, -y);
@@ -286,18 +392,23 @@ class Apple {
 class Bot {
   /// Identifikacijska številka
   int id;
-
   /// Horizontalna lega jabolka
-  int get x => position[0];
+//  int get x => position[0];
+//  double x;
+  double get x => position.x;
 
   /// Vertikalna lega jabolka (NB pozitivne vrednosti predstavljajo odmik od
   /// vrha)
-  int get y => position[1];
-
-  List<int> position;
+//  int get y => position[1];
+//  double y;
+  double get y => position.y;
+//  List<int> position;
+  Position position;
 
   /// Rotacija bota v stopinjah
-  double direction;
+  double dir;
+//  double get direction => dir/3.14* 180.0;
+  double get direction => dir;
 
   /// Privzeti konstruktor
   ///
@@ -310,8 +421,7 @@ class Bot {
   ///
   /// Koordinata [y] narašča od
   /// zgoraj navzdol, torej predstavlja odmik od zgorjnega roba igrišča.
-  Bot(this.id, this.position, this.direction)
-      : assert(direction >= -180 && direction < 180);
+  Bot(this.id, this.position, this.dir);
 
   /// JSON konstruktor
   factory Bot.fromJson(Map<String, dynamic> json) => _$BotFromJson(json);
@@ -325,7 +435,7 @@ class Bot {
   /// Postopek za risanje
   ///
   /// Za risanje potrebuje 2D [context] HTML gradnika *canvas*.
-  void _draw(CanvasRenderingContext2D context, int offsetX, int offsetY,
+  void _draw(CanvasRenderingContext2D context, double offsetX, double offsetY,
       int team1id, int team2id) {
     String color;
     if (this.id == team1id) {
@@ -402,7 +512,7 @@ class Position {
   ///
   /// Koordinate imajo izhodišče v zgornjem levem kotu. Koordinata [x] narašča
   /// na desno; koordinata [y] narašča navzdol.
-  Position(this.x, this.y) : assert(x >= 0 && y >= 0);
+  Position(this.x, this.y);
 
   /// JSON konstruktor
   factory Position.fromJson(Map<String, dynamic> json) =>
