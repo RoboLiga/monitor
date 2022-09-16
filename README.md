@@ -26,3 +26,8 @@ Aplikacijo je mogoče streči tudi brez gradnje:
 $ pub global run webdev serve web:8080
 ```
 kjer je aplikacija nato dosegljiva na `http://localhost:8080`.
+
+Pred tem mora biti aktiviran paket `webdev`:
+```
+$ pub global activate webdev
+```
