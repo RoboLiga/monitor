@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:html';
+import 'dart:async';
 
 Future<void> controlSetup() async {
   setupNewGame();
