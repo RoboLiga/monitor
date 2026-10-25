@@ -1,12 +1,5 @@
 import { defineStore } from "pinia";
 
-function getLocalStorage() {
-    if (typeof window !== 'undefined' && window.localStorage) {
-        return window.localStorage;
-    }
-    return null;
-}
-
 export const useAuthStore = defineStore('authStore', {
     state: () => ({
         games: {}
@@ -34,6 +27,6 @@ export const useAuthStore = defineStore('authStore', {
     },
     persist: {
         key: 'authStore',
-        storage: getLocalStorage()
+        storage: piniaPluginPersistedstate.localStorage()
     }
 });

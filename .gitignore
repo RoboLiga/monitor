@@ -9,11 +9,6 @@ dist
 .DS_Store
 /dist
 
-# lock files
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
 # local env files
 .env.local
 .env.*.local
