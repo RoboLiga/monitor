@@ -9,12 +9,12 @@ export default defineNuxtConfig({
         }
     },
     css: [
-        "vuetify/lib/styles/main.sass",
+        "vuetify/styles",
         "@mdi/font/css/materialdesignicons.min.css"
     ],
     modules: [
         '@pinia/nuxt',
-        '@pinia-plugin-persistedstate/nuxt',
+        'pinia-plugin-persistedstate/nuxt',
     ],
     runtimeConfig:{
         public: {
