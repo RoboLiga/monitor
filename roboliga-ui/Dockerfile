@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json .npmrc ./
 RUN npm i
 COPY . ./
-RUN npm build
+RUN npm run build
 
 FROM node:24-alpine
 
