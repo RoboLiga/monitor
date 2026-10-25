@@ -1,5 +1,5 @@
 FROM node:24-alpine AS build
-LABEL authors="zigas"
+LABEL author="Žiga Slatnar Štagar"
 
 WORKDIR /app
 COPY package.json .npmrc ./
