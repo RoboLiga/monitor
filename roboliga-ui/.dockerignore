@@ -1,0 +1,33 @@
+# Dependencies and build output: rebuilt inside the image
+node_modules
+.nuxt
+.output
+.data
+.nitro
+.cache
+dist
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Git and editors
+.git
+.gitignore
+.idea
+.vscode
+*.swp
+
+# Logs and OS clutter
+npm-debug.log*
+*.log
+.DS_Store
+Thumbs.db
+
+# Docker files themselves
+Dockerfile
+.dockerignore
+
+# Docs
+README.md
