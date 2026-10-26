@@ -48,3 +48,8 @@ npm run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## Docker
+
+Running the docker image works the same way as running the application locally. The only difference is that you need to 
+set the `NUXT_PUBLIC_BASE_API_URL` environment variable to the base url of the server.

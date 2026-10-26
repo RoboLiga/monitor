@@ -1,5 +1,12 @@
 {
-  "name": "nuxt-app",
+  "name": "roboliga-monitor",
+  "author": "Matej Horvat",
+  "contributors": [
+    "Žiga Slatnar Štagar",
+    "Matej Horvat",
+    "Nejc Ilc",
+    "larchman01"
+  ],
   "private": true,
   "type": "module",
   "scripts": {
