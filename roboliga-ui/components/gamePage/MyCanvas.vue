@@ -21,6 +21,33 @@ let size = reactive({
 
 let cubeColors = reactive({});
 
+const objectTypeColors = {
+    plastic: 'red',
+    glass: 'green',
+    shells: '#1565C0',
+    cherry: '#E91E63',
+    pine: '#1B5E20',
+    steel: '#78909C',
+    brick: '#B23A1E'
+}
+
+// Some games send objects flat ({id: object}), others grouped by type ({type: {id: object}})
+const flatObjects = computed(() => {
+    const result = {}
+    for (const [key, value] of Object.entries(props.gameState.objects || {})) {
+        if (value && value.position)
+            result[key] = value
+        else
+            Object.assign(result, value)
+    }
+    return result
+})
+
+const objectColor = (key) => {
+    const type = props.objectTypes ? props.objectTypes[key] : null
+    return cubeColors[key] || objectTypeColors[type] || config.field_colors.undefined
+}
+
 let setSize = () => {
     const maxW = props.gameState.fields.game_field.bottom_right.x
     const maxH = props.gameState.fields.game_field.bottom_right.y
@@ -73,11 +100,11 @@ function CanvasManager(w, h) {
         context.lineTo(field.bottom_right.x * scale, field.bottom_right.y * scale);
         context.lineTo(field.bottom_left.x * scale, field.bottom_left.y * scale);
         context.closePath();
-        context.strokeStyle = this.colors[key];
+        context.strokeStyle = this.colors[key] || this.colors.undefined;
         context.stroke()
 
         if (key !== 'game_field') {
-            context.fillStyle = this.colors[key];
+            context.fillStyle = this.colors[key] || this.colors.undefined;
             context.fill()
         }
 
@@ -86,14 +113,13 @@ function CanvasManager(w, h) {
     }
 
     this.drawCube = (key) => {
-        const cube = props.gameState.objects[key]
+        const cube = flatObjects.value[key]
         const context = this.ctx;
         const scale = this.scale;
         // Save the canvas context state, so we can restore it later
         context.save();
         // Set the cube color based on its type
-        const color = cubeColors[key];
-        context.fillStyle = color;
+        context.fillStyle = objectColor(key);
         // Translate the canvas context to the center of the cube
         context.translate(cube.position.x * scale, cube.position.y * scale);
         // Rotate the canvas context by the cube's direction in degrees
@@ -157,7 +183,7 @@ function draw() {
     }
     manager.drawField(config.field_key)
 
-    for (let key in props.gameState.objects) {
+    for (let key in flatObjects.value) {
         manager.drawCube(key);
     }
 
@@ -179,8 +205,8 @@ function handleCanvasClick(event) {
     const x = (event.clientX - rect.left) / size.scale;
     const y = (event.clientY - rect.top) / size.scale;
 
-    for (let key in props.gameState.objects) {
-        const cube = props.gameState.objects[key];
+    for (let key in flatObjects.value) {
+        const cube = flatObjects.value[key];
         if (x >= cube.position.x - 50 && x <= cube.position.x + 50 &&
             y >= cube.position.y - 50 && y <= cube.position.y + 50) {
                 //toggleCubeColor(key);
@@ -232,25 +258,6 @@ function drawDelay() {
 
 onMounted(() => {
     manager.setContext(myCanvas.value.getContext('2d'));
-    // Initialize cube colors
-    for (let key in props.gameState.objects) {
-        const type = props.objectTypes ? props.objectTypes[key] : null;
-        let color;
-        switch (type) {
-            case 'plastic':
-                color = 'red';
-                break;
-            case 'glass':
-                color = 'green';
-                break;
-            case 'shells':
-                color = '#1565C0';
-                break;
-            default:
-                color = config.field_colors.undefined;
-        }
-        cubeColors[key] = color;
-    }
     draw();
 });
 onUpdated(() => {

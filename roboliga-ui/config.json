@@ -6,6 +6,8 @@
     "blue_glass": "#5CE75C",
     "red_plastic": "#D74C4C",
     "red_glass": "#3B3B3B",
+    "construction_site": "#FFB74D",
+    "environmentalists": "#81C784",
     "box": "gray",
     "undefined": "gray"
   }

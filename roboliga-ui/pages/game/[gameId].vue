@@ -14,15 +14,15 @@
 
         <v-row justify="center" align="center" no-gutters>
             <v-col cols="5" md="5">
-                <Score orientation="left" :team="gameState.teams[teamBlueId]" :maxFuel="gameState.robot_time"
-                       :key="iterBlue"/>
+                <Score v-if="gameState.teams[teamBlueId]" orientation="left" :team="gameState.teams[teamBlueId]"
+                       :maxFuel="gameState.robot_time" :key="iterBlue"/>
             </v-col>
             <v-col cols="2" md="2">
                 <Clock :time-left="gameState.time_left"></Clock>
             </v-col>
             <v-col cols="5" md="5">
-                <Score orientation="right" :team="gameState.teams[teamRedId]" :maxFuel="gameState.robot_time"
-                       :key="iterRed"/>
+                <Score v-if="gameState.teams[teamRedId]" orientation="right" :team="gameState.teams[teamRedId]"
+                       :maxFuel="gameState.robot_time" :key="iterRed"/>
             </v-col>
 
         </v-row>
@@ -44,6 +44,7 @@ import Score from "~/components/gamePage/Score.vue";
 import MyCanvas from "~/components/gamePage/MyCanvas.vue";
 import {navigateTo} from "#app";
 import { useAuthStore } from "~/stores/auth";
+import { getSideTeamIds } from "~/utils/teams";
 
 const {gameId} = useRoute().params
 const baseApiUrl = useRuntimeConfig().public.baseApiUrl
@@ -100,18 +101,18 @@ let prevRed = {
     fuel: 25
 }
 
-const teamBlueId = ref(Object.values(gameState.value.teams).find(t => t.color === 'blue').id)
-const teamRedId = ref(Object.values(gameState.value.teams).find(t => t.color === 'red').id)
+// "Blue" is the left team and "red" the right team, whatever colors the game uses
+const [initialBlueId, initialRedId] = getSideTeamIds(gameState.value.teams)
+const teamBlueId = ref(initialBlueId)
+const teamRedId = ref(initialRedId)
 
 const updateTeams = () => {
-    const btI = Object.values(gameState.value.teams).find(t => t.color === 'blue')
-    const rtI = Object.values(gameState.value.teams).find(t => t.color === 'red')
-
-    teamBlueId.value = btI && btI.id || 0
-    teamRedId.value = rtI && rtI.id || 0
+    [teamBlueId.value, teamRedId.value] = getSideTeamIds(gameState.value.teams)
 
     const blueTeam = gameState.value.teams[teamBlueId.value]
     const redTeam = gameState.value.teams[teamRedId.value]
+    if (!blueTeam || !redTeam)
+        return
 
     // check blue
     // -------------------------------------------------------------------------
