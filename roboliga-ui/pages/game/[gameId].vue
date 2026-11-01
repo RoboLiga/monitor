@@ -164,7 +164,7 @@ let intervalId;
 
 const setRefreshInterval = () => {
     clearInterval(intervalId);
-    const intervalTime = gameState.value.game_on ? 100 : 2000;
+    const intervalTime = gameState.value.game_on ? 20 : 1000;
     intervalId = setInterval(() => {
         canvasWidth.value = canvasDiv.value.clientWidth
         canvasWidth.value = Math.min(canvasWidth.value, window.innerHeight)

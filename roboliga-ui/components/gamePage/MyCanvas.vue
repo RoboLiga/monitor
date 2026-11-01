@@ -112,6 +112,31 @@ function CanvasManager(w, h) {
         context.restore();
     }
 
+    this.drawTreeField = (key) => {
+        const field = props.gameState.tree_fields[key]
+        const context = this.ctx
+        const scale = this.scale;
+
+        context.save();
+        context.beginPath();
+        context.moveTo(field.top_left.x * scale, field.top_left.y * scale);
+        context.lineTo(field.top_right.x * scale, field.top_right.y * scale);
+        context.lineTo(field.bottom_right.x * scale, field.bottom_right.y * scale);
+        context.lineTo(field.bottom_left.x * scale, field.bottom_left.y * scale);
+        context.closePath();
+
+        if (field.planted) {
+            context.fillStyle = this.colors.tree_field_planted || this.colors.undefined;
+            context.fill()
+        }
+        context.strokeStyle = this.colors.tree_field || this.colors.undefined;
+        context.setLineDash([4, 4]);
+        context.stroke()
+
+        // Restore the canvas context state
+        context.restore();
+    }
+
     this.drawCube = (key) => {
         const cube = flatObjects.value[key]
         const context = this.ctx;
@@ -176,6 +201,10 @@ let manager = new CanvasManager(size.w, size.h);
 
 function draw() {
     manager.clearField()
+
+    for (let key in props.gameState.tree_fields) {
+        manager.drawTreeField(key);
+    }
 
     for (let key in props.gameState.fields) {
         if (key !== config.field_key)
