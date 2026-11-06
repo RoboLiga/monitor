@@ -6,6 +6,10 @@
     "blue_glass": "#5CE75C",
     "red_plastic": "#D74C4C",
     "red_glass": "#3B3B3B",
+    "construction_site": "#FFB74D",
+    "environmentalists": "#81C784",
+    "tree_field": "#D3D3D3",
+    "tree_field_planted": "rgba(46, 125, 50, 0.5)",
     "box": "gray",
     "undefined": "gray"
   }

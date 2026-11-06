@@ -11,6 +11,7 @@
         <v-row justify="center" align="center">
             <v-col cols="10">
                 <v-progress-linear
+                        v-if="hasFuel"
                         :indeterminate="team.charging && fuelPercent < 98"
                         :model-value="fuelPercent"
                         :color="scoreField.color"
@@ -39,17 +40,23 @@ export default {
 
         const team = ref(props.team)
 
+        // Not every game has fuel (e.g. Construction)
+        const hasFuel = computed(() => {
+            return team.value.fuel !== undefined && !!props.maxFuel
+        })
+
         const fuelPercent = computed(() => {
              return team.value.fuel / props.maxFuel * 100
         })
 
         const scoreField = computed(() => {
+            const color = team.value.color || (props.orientation === 'left' ? 'blue' : 'red')
 
             const left = {
                 order1: 0,
                 order2: 1,
-                color: "blue-lighten-2",
-                text: "text-blue-lighten-1 text-right",
+                color: `${color}-lighten-2`,
+                text: `text-${color}-lighten-1 text-right`,
                 justify: "end",
                 progress: true
             }
@@ -57,8 +64,8 @@ export default {
             const right = {
                 order1: 1,
                 order2: 0,
-                color: "red-lighten-2",
-                text: "text-red-lighten-1 text-left",
+                color: `${color}-lighten-2`,
+                text: `text-${color}-lighten-1 text-left`,
                 justify: "start",
                 progress: false
             }
@@ -67,7 +74,7 @@ export default {
 
 
 
-        return {fuelPercent, scoreField, team}
+        return {hasFuel, fuelPercent, scoreField, team}
     },
 
 

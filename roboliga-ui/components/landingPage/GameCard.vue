@@ -12,8 +12,8 @@
             </v-toolbar>
         </v-card-title>
         <v-card-text v-if="gameState && gameState.teams">
-            <div class="text-blue-darken-1">{{ gameState.teams[teamBlueId]?.name }}</div>
-            <div class="text-red-darken-1">{{ gameState.teams[teamRedId]?.name }}</div>
+            <div :class="`text-${gameState.teams[teamBlueId]?.color || 'blue'}-darken-1`">{{ gameState.teams[teamBlueId]?.name }}</div>
+            <div :class="`text-${gameState.teams[teamRedId]?.color || 'red'}-darken-1`">{{ gameState.teams[teamRedId]?.name }}</div>
         </v-card-text>
     </v-card>
 
@@ -40,6 +40,7 @@
 <script setup>
 import {useFetch, useRuntimeConfig} from "#app";
 import {useAuthStore} from "~/stores/auth";
+import {getSideTeamIds} from "~/utils/teams";
 
 const {$promptPassword} = useNuxtApp()
 
@@ -77,9 +78,7 @@ const fetchGameState = async (retries = 5, delay = 1000) => {
 
         if (gameState.value) {
             if (gameState.value.teams) {
-                const teams = gameState.value.teams
-                teamBlueId.value = Object.values(teams).find(t => t.color === 'blue')?.id
-                teamRedId.value = Object.values(teams).find(t => t.color === 'red')?.id
+                [teamBlueId.value, teamRedId.value] = getSideTeamIds(gameState.value.teams)
             }
             gameStateText.value = gameState.value.game_on ? "STOP" : "START"
             return
