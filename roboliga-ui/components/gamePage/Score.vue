@@ -1,16 +1,16 @@
 <template>
     <div class="score-card myFont" :class="orientation === 'left' ? 'score-card--left' : 'score-card--right'"
          :style="cardStyle">
-        <div class="team-name text-h5 text-md-h4">{{ team.name }}</div>
+        <div class="team-name">{{ team.name }}</div>
 
         <div class="score-wrap">
-            <span class="score-value">{{ team.score }}</span>
             <div class="deltas">
                 <span v-for="d in deltas" :key="d.id" class="delta"
                       :class="d.value > 0 ? 'delta--up' : 'delta--down'">
                     {{ d.value > 0 ? '+' : '' }}{{ d.value }}
                 </span>
             </div>
+            <span class="score-value">{{ team.score }}</span>
         </div>
     </div>
 </template>
@@ -83,6 +83,9 @@ onUnmounted(() => {
 }
 
 .team-name {
+    font-size: clamp(1.75rem, 3.6vw, 3.75rem);
+    line-height: 1.15;
+    font-weight: 600;
     color: var(--team-text) !important;
     word-break: break-word;
     min-width: 0;
@@ -96,9 +99,16 @@ onUnmounted(() => {
     text-align: right;
 }
 
+/* Score with its change indicator beside it, on the side facing the team name */
 .score-wrap {
-    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     flex-shrink: 0;
+}
+
+.score-card--right .score-wrap {
+    flex-direction: row-reverse;
 }
 
 .score-value {
@@ -111,23 +121,30 @@ onUnmounted(() => {
 }
 
 .deltas {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 60%;
+    position: relative;
+    align-self: stretch;
+    width: clamp(3rem, 6vw, 6rem);
     pointer-events: none;
 }
 
 .delta {
     position: absolute;
-    left: 50%;
-    bottom: 0;
+    top: 50%;
     font-size: clamp(1.5rem, 3.6vw, 3.6rem);
     font-weight: 700;
+    line-height: 1;
     white-space: nowrap;
     text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-    transform: translateX(-50%);
     animation: float-up 1.4s ease-out forwards;
+}
+
+/* Hug the number */
+.score-card--left .delta {
+    right: 0;
+}
+
+.score-card--right .delta {
+    left: 0;
 }
 
 .delta--up {
@@ -141,15 +158,15 @@ onUnmounted(() => {
 @keyframes float-up {
     0% {
         opacity: 0;
-        transform: translate(-50%, 0) scale(0.8);
+        transform: translateY(-50%) scale(0.8);
     }
     15% {
         opacity: 1;
-        transform: translate(-50%, -20%) scale(1.15);
+        transform: translateY(-60%) scale(1.15);
     }
     100% {
         opacity: 0;
-        transform: translate(-50%, -160%) scale(1);
+        transform: translateY(-150%) scale(1);
     }
 }
 
@@ -161,9 +178,11 @@ onUnmounted(() => {
     @keyframes fade-out {
         0%, 30% {
             opacity: 1;
+            transform: translateY(-50%);
         }
         100% {
             opacity: 0;
+            transform: translateY(-50%);
         }
     }
 }
