@@ -1,88 +1,189 @@
 <template>
-    <v-container>
-        <v-row :justify="scoreField.justify" align="center">
-            <v-col cols="9" md="9" lg="10" :order="scoreField.order1">
-                <div class="text-h5 text-md-h3 myFont" style="word-break: break-word" :class="scoreField.text">{{team.name }}</div>
-            </v-col>
-            <v-col cols="3" md="3" lg="2" :order="scoreField.order2">
-                <div class="text-h5 text-md-h1 myFont" :class="scoreField.text">{{ team.score }}</div>
-            </v-col>
-        </v-row>
-        <v-row justify="center" align="center">
-            <v-col cols="10">
-                <v-progress-linear
-                        v-if="hasFuel"
-                        :indeterminate="team.charging && fuelPercent < 98"
-                        :model-value="fuelPercent"
-                        :color="scoreField.color"
-                        :reverse="scoreField.progress">
-                </v-progress-linear>
+    <div class="score-card myFont" :class="orientation === 'left' ? 'score-card--left' : 'score-card--right'"
+         :style="cardStyle">
+        <div class="team-name">{{ team.name }}</div>
 
-            </v-col>
-        </v-row>
-    </v-container>
+        <div class="score-wrap">
+            <div class="deltas">
+                <span v-for="d in deltas" :key="d.id" class="delta"
+                      :class="d.value > 0 ? 'delta--up' : 'delta--down'">
+                    {{ d.value > 0 ? '+' : '' }}{{ d.value }}
+                </span>
+            </div>
+            <span class="score-value">{{ team.score }}</span>
+        </div>
+    </div>
 </template>
 
-<script>
-export default {
-    name: "Score",
-    props: ["orientation", "team", "maxFuel"],
-    setup(props) {
+<script setup>
+import colors from "vuetify/util/colors";
 
-        /*const def_team = {
-            "id": 0,
-            "color": "red",
-            "name": "Placeholder",
-            "score": 0,
-            "fuel": 25,
-            "charging": true
-        }*/
+const props = defineProps(['orientation', 'team'])
 
-        const team = ref(props.team)
+const DELTA_DURATION = 1400
 
-        // Not every game has fuel (e.g. Construction)
-        const hasFuel = computed(() => {
-            return team.value.fuel !== undefined && !!props.maxFuel
-        })
+const palette = computed(() => {
+    const name = props.team.color || (props.orientation === 'left' ? 'blue' : 'red')
+    return colors[name] || colors.grey
+})
 
-        const fuelPercent = computed(() => {
-             return team.value.fuel / props.maxFuel * 100
-        })
+const cardStyle = computed(() => ({
+    '--team-accent': palette.value.base,
+    '--team-bg': palette.value.lighten5,
+    '--team-text': palette.value.darken2,
+}))
 
-        const scoreField = computed(() => {
-            const color = team.value.color || (props.orientation === 'left' ? 'blue' : 'red')
+// Floating "+N" / "-N" whenever the score changes
+const deltas = ref([])
+const timeouts = new Set()
+let nextId = 0
 
-            const left = {
-                order1: 0,
-                order2: 1,
-                color: `${color}-lighten-2`,
-                text: `text-${color}-lighten-1 text-right`,
-                justify: "end",
-                progress: true
-            }
+watch(() => [props.team.id, props.team.score], ([newTeam, newScore], [oldTeam, oldScore]) => {
+    // A different team on this side is not a score change
+    if (newTeam !== oldTeam) {
+        deltas.value = []
+        return
+    }
+    if (newScore === oldScore) return
+    const id = nextId++
+    deltas.value.push({id, value: newScore - oldScore})
+    const t = setTimeout(() => {
+        deltas.value = deltas.value.filter(d => d.id !== id)
+        timeouts.delete(t)
+    }, DELTA_DURATION)
+    timeouts.add(t)
+})
 
-            const right = {
-                order1: 1,
-                order2: 0,
-                color: `${color}-lighten-2`,
-                text: `text-${color}-lighten-1 text-left`,
-                justify: "start",
-                progress: false
-            }
-            return props.orientation === 'left' ? left : right
-        })
-
-
-
-        return {hasFuel, fuelPercent, scoreField, team}
-    },
-
-
-
-
-}
+onUnmounted(() => {
+    timeouts.forEach(clearTimeout)
+})
 </script>
 
 <style scoped>
+.score-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 100%;
+    padding: 0.75rem 1.5rem;
+    border-radius: 16px;
+    background: var(--team-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
 
+.score-card--left {
+    border-left: 10px solid var(--team-accent);
+}
+
+/* Right card mirrors the left: score faces the clock, name faces outward */
+.score-card--right {
+    flex-direction: row-reverse;
+    border-right: 10px solid var(--team-accent);
+}
+
+.team-name {
+    font-size: clamp(1.75rem, 3.6vw, 3.75rem);
+    line-height: 1.15;
+    font-weight: 600;
+    color: var(--team-text) !important;
+    word-break: break-word;
+    min-width: 0;
+}
+
+.score-card--left .team-name {
+    text-align: left;
+}
+
+.score-card--right .team-name {
+    text-align: right;
+}
+
+/* Score with its change indicator beside it, on the side facing the team name */
+.score-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.score-card--right .score-wrap {
+    flex-direction: row-reverse;
+}
+
+.score-value {
+    display: block;
+    font-size: clamp(3rem, 9vw, 9rem);
+    line-height: 1;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--team-text);
+}
+
+.deltas {
+    position: relative;
+    align-self: stretch;
+    width: clamp(3rem, 6vw, 6rem);
+    pointer-events: none;
+}
+
+.delta {
+    position: absolute;
+    top: 50%;
+    font-size: clamp(1.5rem, 3.6vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    animation: float-up 1.4s ease-out forwards;
+}
+
+/* Hug the number */
+.score-card--left .delta {
+    right: 0;
+}
+
+.score-card--right .delta {
+    left: 0;
+}
+
+.delta--up {
+    color: #2e7d32;
+}
+
+.delta--down {
+    color: #c62828;
+}
+
+@keyframes float-up {
+    0% {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.8);
+    }
+    15% {
+        opacity: 1;
+        transform: translateY(-60%) scale(1.15);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-150%) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .delta {
+        animation: fade-out 1.4s ease-out forwards;
+    }
+
+    @keyframes fade-out {
+        0%, 30% {
+            opacity: 1;
+            transform: translateY(-50%);
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(-50%);
+        }
+    }
+}
 </style>

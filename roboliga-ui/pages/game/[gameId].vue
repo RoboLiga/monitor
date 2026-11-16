@@ -12,17 +12,15 @@
                           @update:game_paused="gameState.game_paused = $event"></ControlPanel>
         </v-row>
 
-        <v-row justify="center" align="center" no-gutters>
+        <v-row justify="center" align="stretch" no-gutters class="px-4 py-2">
             <v-col cols="5" md="5">
-                <Score v-if="gameState.teams[teamBlueId]" orientation="left" :team="gameState.teams[teamBlueId]"
-                       :maxFuel="gameState.robot_time" :key="iterBlue"/>
+                <Score v-if="gameState.teams[teamBlueId]" orientation="left" :team="gameState.teams[teamBlueId]"/>
             </v-col>
-            <v-col cols="2" md="2">
+            <v-col cols="2" md="2" class="d-flex align-center justify-center">
                 <Clock :time-left="gameState.time_left"></Clock>
             </v-col>
             <v-col cols="5" md="5">
-                <Score v-if="gameState.teams[teamRedId]" orientation="right" :team="gameState.teams[teamRedId]"
-                       :maxFuel="gameState.robot_time" :key="iterRed"/>
+                <Score v-if="gameState.teams[teamRedId]" orientation="right" :team="gameState.teams[teamRedId]"/>
             </v-col>
 
         </v-row>
@@ -50,9 +48,6 @@ const {gameId} = useRoute().params
 const baseApiUrl = useRuntimeConfig().public.baseApiUrl
 const auth = useAuthStore();
 const { $promptPassword } = useNuxtApp();
-
-let iterBlue = ref(0)
-let iterRed = ref(0)
 
 const {data: gameState, refresh} = await useFetch(baseApiUrl + `/game/${gameId}`, {
     method: 'GET',
@@ -87,20 +82,6 @@ const fetchObjectTypes = async () => {
 
 await fetchObjectTypes();
 
-let prevBlue = {
-    id: 0,
-    score: 0,
-    charging: false,
-    fuel: 25
-}
-
-let prevRed = {
-    id: 0,
-    score: 0,
-    charging: false,
-    fuel: 25
-}
-
 // "Blue" is the left team and "red" the right team, whatever colors the game uses
 const [initialBlueId, initialRedId] = getSideTeamIds(gameState.value.teams)
 const teamBlueId = ref(initialBlueId)
@@ -108,52 +89,6 @@ const teamRedId = ref(initialRedId)
 
 const updateTeams = () => {
     [teamBlueId.value, teamRedId.value] = getSideTeamIds(gameState.value.teams)
-
-    const blueTeam = gameState.value.teams[teamBlueId.value]
-    const redTeam = gameState.value.teams[teamRedId.value]
-    if (!blueTeam || !redTeam)
-        return
-
-    // check blue
-    // -------------------------------------------------------------------------
-    let changedBlue = false
-    if (teamBlueId.value !== prevBlue.id) {
-        prevBlue.id = teamBlueId.value
-        changedBlue = true
-    } else if (blueTeam.score !== prevBlue.score) {
-        prevBlue.score = blueTeam.score
-        changedBlue = true
-    }
-    if (blueTeam.charging !== prevBlue.charging) {
-        prevBlue.charging = blueTeam.charging
-        changedBlue = true
-    } else if (blueTeam.fuel !== prevBlue.fuel) {
-        prevBlue.fuel = blueTeam.fuel
-        changedBlue = true
-    }
-    if (changedBlue)
-        iterBlue.value += iterBlue.value < 10000 ? 1 : -10000
-
-    // check red
-    // -------------------------------------------------------------------------
-    let changedRed = false
-    if (teamRedId.value !== prevRed.id) {
-        prevRed.id = teamRedId.value
-        changedRed = true
-    } else if (redTeam.score !== prevRed.score) {
-        prevRed.score = redTeam.score
-        changedRed = true
-    }
-    if (redTeam.charging !== prevRed.charging) {
-        prevRed.charging = redTeam.charging
-        changedRed = true
-    } else if (redTeam.fuel !== prevRed.fuel) {
-        prevRed.fuel = redTeam.fuel
-        changedRed = true
-    }
-
-    if (changedRed)
-        iterRed.value += iterRed.value < 10000 ? 1 : -10000
 }
 
 const canvasDiv = ref(null)
