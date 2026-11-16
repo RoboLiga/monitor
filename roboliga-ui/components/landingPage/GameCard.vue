@@ -12,8 +12,8 @@
             </v-toolbar>
         </v-card-title>
         <v-card-text v-if="gameState && gameState.teams">
-            <div :class="`text-${gameState.teams[teamBlueId]?.color || 'blue'}-darken-1`">{{ gameState.teams[teamBlueId]?.name }}</div>
-            <div :class="`text-${gameState.teams[teamRedId]?.color || 'red'}-darken-1`">{{ gameState.teams[teamRedId]?.name }}</div>
+            <div :class="`text-${gameState.teams[teamBlueId]?.color || 'orange'}-darken-1`">{{ gameState.teams[teamBlueId]?.name }}</div>
+            <div :class="`text-${gameState.teams[teamRedId]?.color || 'green'}-darken-1`">{{ gameState.teams[teamRedId]?.name }}</div>
         </v-card-text>
     </v-card>
 

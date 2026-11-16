@@ -14,9 +14,9 @@
                         <v-col cols="6">
                             <v-select
                                     v-model="blueTeam"
-                                    label="Blue team"
+                                    label="Orange team"
                                     variant="underlined"
-                                    color="blue-lighten-1"
+                                    color="orange-darken-1"
                                     :items="robotOptions1"
                                     item-title="display"
                                     item-value="value"
@@ -27,9 +27,9 @@
                         <v-col cols="6">
                             <v-select
                                     v-model="redTeam"
-                                    label="Red team"
+                                    label="Green team"
                                     variant="underlined"
-                                    color="red-lighten-1"
+                                    color="green-darken-1"
                                     :items="robotOptions2"
                                     item-title="display"
                                     item-value="value"

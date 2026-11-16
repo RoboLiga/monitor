@@ -4,9 +4,9 @@
             <v-col cols="6" md="4" >
                 <v-text-field
                         v-model="blueTeam"
-                        label="Blue team score"
+                        label="Orange team score"
                         variant="underlined"
-                        color="blue-lighten-1"
+                        color="orange-darken-1"
                         :rules="numberRules"
                 ></v-text-field>
             </v-col>
@@ -14,9 +14,9 @@
             <v-col cols="6" md="4">
                 <v-text-field
                         v-model="redTeam"
-                        label="Red team score"
+                        label="Green team score"
                         variant="underlined"
-                        color="red-lighten-1"
+                        color="green-darken-1"
                         :rules="numberRules"
                 ></v-text-field>
             </v-col>

@@ -23,7 +23,7 @@ const props = defineProps(['orientation', 'team'])
 const DELTA_DURATION = 1400
 
 const palette = computed(() => {
-    const name = props.team.color || (props.orientation === 'left' ? 'blue' : 'red')
+    const name = props.team.color || (props.orientation === 'left' ? 'orange' : 'green')
     return colors[name] || colors.grey
 })
 
